@@ -1,9 +1,3 @@
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/adapt-or-get-left-behind-domain-adaptation/aspect-based-sentiment-analysis-on-semeval)](https://paperswithcode.com/sota/aspect-based-sentiment-analysis-on-semeval?p=adapt-or-get-left-behind-domain-adaptation)
-
-# Adapt or Get Left Behind: Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification
-code for our 2019 paper: ["Adapt or Get Left Behind:
-Domain Adaptation through BERT Language Model Finetuning for Aspect-Target Sentiment Classification"](https://arxiv.org/abs/1908.11860)
-
 ### Installation
 First clone repository, open a terminal and cd to the repository
     
@@ -11,7 +5,7 @@ First clone repository, open a terminal and cd to the repository
     source venv/bin/activate
     pip install -r requirements.txt
     python -m spacy download en_core_web_sm
-    mkdir -p data/raw/semeval2014  # creates directories for data
+    mkdir -p data/raw/  # creates directories for data
     mkdir -p data/transformed
     mkdir -p data/models
     
