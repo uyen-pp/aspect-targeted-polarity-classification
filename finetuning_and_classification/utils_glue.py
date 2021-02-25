@@ -29,6 +29,10 @@ import xml.etree.ElementTree as ET
 
 logger = logging.getLogger(__name__)
 
+import xml.etree.ElementTree as ET
+import pickle
+
+
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -176,7 +180,7 @@ def semeval2014term_to_aspectsentiment_hr(filename, remove_conflicting=True):
     def transform_aspect_term_name(se):
         return se
 
-    with open(filename) as file:
+    with open(filename, "rt", encoding="utf-8") as file:
 
         sentence_elements = ET.parse(file).getroot().iter('sentence')
 
@@ -188,6 +192,7 @@ def semeval2014term_to_aspectsentiment_hr(filename, remove_conflicting=True):
             # review_text = ' '.join([el.text for el in review_element.iter('text')])
 
             sentence_text = s.find('text').text
+            
             aspect_term_sentiment = []
             for o in s.iter('aspectTerm'):
                 aspect_term = transform_aspect_term_name(o.get('term'))
@@ -209,12 +214,11 @@ def semeval2014term_to_aspectsentiment_hr(filename, remove_conflicting=True):
         cats = list(classes)
         cats.sort()
 
-    idx2aspectlabel = {k: v for k, v in enumerate(cats)}
-    sentilabel2idx = {"NEG": 1, "NEU": 2, "POS": 3, "CONF": 4}
-    idx2sentilabel = {k: v for v, k in sentilabel2idx.items()}
+    # idx2aspectlabel = {k: v for k, v in enumerate(cats)}
+    # sentilabel2idx = {"NEG": 1, "NEU": 2, "POS": 3, "CONF": 4}
+    # idx2sentilabel = {k: v for v, k in sentilabel2idx.items()}
 
-    return sentences, aspect_term_sentiments, (idx2aspectlabel, idx2sentilabel)
-
+    return sentences, aspect_term_sentiments
 
 def generate_qa_sentence_pairs_nosampling(sentences, aspecterm_sentiments):
     sentence_pairs = []
@@ -227,6 +231,46 @@ def generate_qa_sentence_pairs_nosampling(sentences, aspecterm_sentiments):
             labels.append(v)
 
     return sentence_pairs, labels
+
+class YNAtscProcessor(DataProcessor):
+    """Processor for the Aspect-target sentiment on YN data"""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            os.path.join(data_dir, "train.xml"), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            os.path.join(data_dir, "test.xml"), "dev")
+
+    def get_labels(self):
+        """See base class."""
+        return ["POS", "NEG", "NEU"]
+
+    def _create_examples(self, corpus, set_type):
+        """Creates examples for the training and dev sets."""
+
+
+        sentences, aspects = semeval2014term_to_aspectsentiment_hr(corpus)
+
+        sentences, labels = generate_qa_sentence_pairs_nosampling(sentences, aspects)
+
+        examples = []
+
+        for i, sentence_pair in enumerate(sentences):
+
+            guid = "%s-%s" % (set_type, i)
+            try:
+                text_a = sentence_pair[0]
+                text_b = sentence_pair[1]
+                label = labels[i]
+            except IndexError:
+                continue
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        return examples
 
 
 class SemEval2014AtscProcessor(DataProcessor):
@@ -250,7 +294,7 @@ class SemEval2014AtscProcessor(DataProcessor):
         """Creates examples for the training and dev sets."""
 
 
-        sentences, aspects, idx2labels = semeval2014term_to_aspectsentiment_hr(corpus, remove_conflicting=True)
+        sentences, aspects = semeval2014term_to_aspectsentiment_hr(corpus, remove_conflicting=True)
 
         sentences, labels = generate_qa_sentence_pairs_nosampling(sentences, aspects)
 
@@ -684,6 +728,8 @@ def compute_metrics(task_name, preds, labels, sentences=None, error_file=None):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "semeval2014-atsc":
         return acc_and_f1macro(preds, labels)
+    elif task_name == "atsc":
+        return acc_and_f1macro(preds, labels)
     else:
         raise KeyError(task_name)
 
@@ -699,6 +745,7 @@ processors = {
     "rte": RteProcessor,
     "wnli": WnliProcessor,
     "semeval2014-atsc":SemEval2014AtscProcessor,
+    "atsc": YNAtscProcessor
 }
 
 output_modes = {
@@ -713,6 +760,7 @@ output_modes = {
     "rte": "classification",
     "wnli": "classification",
     "semeval2014-atsc":"classification",
+    "atsc": "classification"
 }
 
 GLUE_TASKS_NUM_LABELS = {
@@ -726,4 +774,5 @@ GLUE_TASKS_NUM_LABELS = {
     "rte": 2,
     "wnli": 2,
     "semeval2014-atsc":3,
+    "atsc": 3
 }

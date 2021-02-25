@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import random
 import math
 from collections import Counter
-from utils import semeval2014term_to_aspectsentiment_hr
+from utils import YNmilk_data_reform
 from copy import copy, deepcopy
 
 parser = argparse.ArgumentParser(description='Generate finetuning corpus for restaurants.')
@@ -99,7 +99,7 @@ def upsample_data(sentence_pairs, labels, target_ratios={'POS': 0.53, 'NEG': 0.2
     # print(sentence_pairs, labels)  # is list of pairs -> decide which pair to upsample ...
 
     # 0. compute indeex subsets for every example
-    # 1. compute how many samples to sample ->
+    # 1. compute how many samples to sample 
 
     ix_subsets = {
         'POS': [],
@@ -173,7 +173,7 @@ def export_dataset_to_xml(fn, sentence_pairs, labels):
     }
 
     for ix, (sentence, aspectterm) in enumerate(sentence_pairs):
-        # print(sentence)
+
         sentiment = labels[ix]
         sentence_el = ET.SubElement(sentences_el, 'sentence')
         sentence_el.set('id', str(ix))
@@ -206,9 +206,9 @@ def export_dataset_to_xml(fn, sentence_pairs, labels):
 
     indent(sentences_el)
     # mydata = ET.dump(sentences_el)
-    mydata = ET.tostring(sentences_el)
+    mydata = ET.tostring(sentences_el, encoding='utf-8')
+
     with open(fn, "wb") as f:
-        # f.write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
         f.write(mydata)
         f.close()
 
@@ -234,8 +234,7 @@ for fn in args.files:
         os.makedirs(args.output_dir)
 
     print(fn)
-    sents_train, ats_train, idx2labels = semeval2014term_to_aspectsentiment_hr(fn,
-                                                                               remove_conflicting=args.noconfl)
+    sents_train, ats_train = YNmilk_data_reform(fn)
 
     sentence_pairs_train, labels_train, counts_train = create_sentence_pairs(sents_train, ats_train)
 
