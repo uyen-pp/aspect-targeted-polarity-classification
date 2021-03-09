@@ -34,7 +34,7 @@ from tqdm import tqdm, trange
 
 from transformers import (WEIGHTS_NAME, BertConfig,
                                   BertForSequenceClassification, BertTokenizer,
-                                  RobertaConfig, RobertaForSequenceClassification, AutoTokenizer,
+                                  RobertaConfig, RobertaForSequenceClassification, PhobertTokenizer,
                                   XLMConfig, XLMForSequenceClassification,
                                   XLMTokenizer, XLNetConfig,
                                   XLNetForSequenceClassification,
@@ -239,9 +239,6 @@ def evaluate(args, model, tokenizer, prefix=""):
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
     return results
-
-
-def test(args, model, tokenizer, )
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
