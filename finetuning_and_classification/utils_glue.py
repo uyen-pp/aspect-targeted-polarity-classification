@@ -299,7 +299,43 @@ class YNARProcessor(DataProcessor):
 
     def get_labels(self):
         """See base class."""
-        return ['Hương_vị', 'Tiện_lợi', 'Dinh_dưỡng', 'Bao_bì đóng_gói', 'Kết_cấu bột', 'Nguồn_gốc xuất sứ', 'Thành_phần', 'Cân nặng', 'Hấp_thụ', 'Dị_ứng', 'Mẹ nhiều sữa', 'Phát_triển trí_não', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Dinh_dưỡng', 'Hệ_miễn_dịch', 'Nóng', 'Phát_triển thể_chất', 'Ngủ', 'Dạ_dày', 'Nôn_mửa', 'Nhãn_hiệu', 'Thành_phần', 'Chất_lượng', 'Dịch_vụ khách_hàng', 'Dịch_vụ khách_hàng', 'Khuyến_mại', 'Dịch_vụ', 'Bán hàng', 'Bán hàng', 'Tiếp_thị điện_tử', 'Thương_mại_điện_tử', 'Dịch_vụ giao hàng', 'Nội_dung Tiếp_thị điện_tử', 'Hệ_thống thương_mại_điện_tử', 'Quà tặng', 'Tuổi', 'Phân_phối', 'Hạn sử_dụng', 'Chức_năng điều_hành', 'Giá', 'Hướng_dẫn sử_dụng']
+        return ['Bao_bì đóng_gói',
+                'Bán hàng',
+                'Chất_lượng',
+                'Chức_năng tiêu_hoá',
+                'Chức_năng điều_hành',
+                'Cân nặng',
+                'Dinh_dưỡng',
+                'Dạ_dày',
+                'Dị_ứng',
+                'Dịch_vụ',
+                'Dịch_vụ giao hàng',
+                'Dịch_vụ khách_hàng',
+                'Giá',
+                'Hương_vị',
+                'Hướng_dẫn sử_dụng',
+                'Hạn sử_dụng',
+                'Hấp_thụ',
+                'Hệ_miễn_dịch',
+                'Hệ_thống thương_mại_điện_tử',
+                'Khuyến_mại',
+                'Kết_cấu bột',
+                'Mẹ nhiều sữa',
+                'Nguồn_gốc xuất sứ',
+                'Ngủ',
+                'Nhãn_hiệu',
+                'Nóng',
+                'Nôn_mửa',
+                'Nội_dung Tiếp_thị điện_tử',
+                'Phát_triển thể_chất',
+                'Phát_triển trí_não',
+                'Phân_phối',
+                'Quà tặng',
+                'Thành_phần',
+                'Thương_mại_điện_tử',
+                'Tiếp_thị điện_tử',
+                'Tiện_lợi',
+                'Tuổi']
 
     def _create_examples(self, corpus, set_type):
         """Creates examples for the training and dev sets."""
@@ -831,5 +867,5 @@ GLUE_TASKS_NUM_LABELS = {
     "wnli": 2,
     "semeval2014-atsc":3,
     "atsc": 3,
-    "ar": 43
+    "ar": 37
 }
