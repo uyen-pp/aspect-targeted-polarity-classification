@@ -32,7 +32,7 @@ from torch.utils.data.distributed import DistributedSampler
 from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
 
-from transformers import (WEIGHTS_NAME, BertConfig,
+from transformers import (WEIGHTS_NAME, BertConfig, AutoConfig,
                                   BertForSequenceClassification, BertTokenizer,
                                   RobertaConfig, RobertaForSequenceClassification, PhobertTokenizer,
                                   XLMConfig, XLMForSequenceClassification,
@@ -450,34 +450,11 @@ def main():
     label_list = processor.get_labels()
     num_labels = len(label_list)
 
-    # Load pretrained model and tokenizer
-    if args.local_rank not in [-1, 0]:
-        torch.distributed.barrier()  # Make sure only the first process in distributed training will download model & vocab
-
-
-    args.model_type = args.model_type.lower()
-    config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-    config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
-    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name if args.tokenizer_name else args.model_name_or_path, do_lower_case=args.do_lower_case)
-    model = model_class.from_pretrained(args.model_name_or_path, from_tf=bool('.ckpt' in args.model_name_or_path), config=config)
-
-
-    if args.local_rank == 0:
-        torch.distributed.barrier()  # Make sure only the first process in distributed training will download model & vocab 0
-    # Distributed and parallel training
-    model.to(args.device)
-    if args.local_rank != -1:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank],
-                                                          output_device=args.local_rank,
-                                                          find_unused_parameters=True)
-    elif args.n_gpu > 1:
-        model = torch.nn.DataParallel(model)
-
-    logger.info("Training/evaluation parameters %s", args)
-
+    
 
     # Training
     if args.do_train:
+        
         checkpoint = None
         if last_checkpoint is not None:
             checkpoint = last_checkpoint
@@ -486,6 +463,32 @@ def main():
             # checkpoint.
             if AutoConfig.from_pretrained(model_args.model_name_or_path).num_labels == num_labels:
                 checkpoint = model_args.model_name_or_path
+
+
+        args.model_type = args.model_type.lower()
+        config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
+        config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path, num_labels=num_labels, finetuning_task=args.task_name)
+        tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name if args.tokenizer_name else args.model_name_or_path, do_lower_case=args.do_lower_case)
+        model = model_class.from_pretrained(checkpoint, from_tf=bool('.ckpt' in args.model_name_or_path), config=config)
+
+        # Load pretrained model and tokenizer
+        if args.local_rank not in [-1, 0]:
+            torch.distributed.barrier()  # Make sure only the first process in distributed training will download model & vocab
+
+        
+        if args.local_rank == 0:
+            torch.distributed.barrier()  # Make sure only the first process in distributed training will download model & vocab 0
+        
+        # Distributed and parallel training
+        model.to(args.device)
+        if args.local_rank != -1:
+            model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank],
+                                                            output_device=args.local_rank,
+                                                            find_unused_parameters=True)
+        elif args.n_gpu > 1:
+            model = torch.nn.DataParallel(model)
+
+        logger.info("Training parameters %s", args)
 
 
         train_dataset, _ = load_and_cache_examples(args, args.task_name, tokenizer, evaluate=False)
@@ -510,7 +513,7 @@ def main():
         torch.save(args, os.path.join(args.output_dir, 'training_args.bin'))
 
         # Load a trained model and vocabulary that you have fine-tuned
-        model = model_class.from_pretrained(checkpoint)
+        model = model_class.from_pretrained(args.output_dir)
         tokenizer = tokenizer_class.from_pretrained(args.output_dir)
         model.to(args.device)
 
