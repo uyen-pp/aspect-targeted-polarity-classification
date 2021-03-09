@@ -321,7 +321,7 @@ class YNARProcessor(DataProcessor):
                 'Khuyến_mại',
                 'Kết_cấu bột',
                 'Mẹ nhiều sữa',
-                'Nguồn_gốc xuất sứ',
+                'Nguồn_gốc xuất xứ',
                 'Ngủ',
                 'Nhãn_hiệu',
                 'Nóng',
