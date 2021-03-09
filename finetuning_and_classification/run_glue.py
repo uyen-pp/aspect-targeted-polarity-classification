@@ -22,6 +22,7 @@ import glob
 import logging
 import os
 import random
+import gc
 
 import numpy as np
 import torch
@@ -33,7 +34,7 @@ from tqdm import tqdm, trange
 
 from transformers import (WEIGHTS_NAME, BertConfig,
                                   BertForSequenceClassification, BertTokenizer,
-                                  RobertaConfig, RobertaForSequenceClassification, PhobertTokenizer,
+                                  RobertaConfig, RobertaForSequenceClassification, AutoTokenizer,
                                   XLMConfig, XLMForSequenceClassification,
                                   XLMTokenizer, XLNetConfig,
                                   XLNetForSequenceClassification,
@@ -164,6 +165,8 @@ def train(args, train_dataset, model, tokenizer):
             if args.max_steps > 0 and global_step > args.max_steps:
                 epoch_iterator.close()
                 break
+            
+                
         if args.max_steps > 0 and global_step > args.max_steps:
             train_iterator.close()
             break
@@ -236,6 +239,9 @@ def evaluate(args, model, tokenizer, prefix=""):
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
     return results
+
+
+def test(args, model, tokenizer, )
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):

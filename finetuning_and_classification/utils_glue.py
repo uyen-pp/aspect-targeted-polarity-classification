@@ -220,6 +220,18 @@ def semeval2014term_to_aspectsentiment_hr(filename, remove_conflicting=True):
 
     return sentences, aspect_term_sentiments
 
+def generate_text_label_ar(sentences, aspecterm_sentiments):
+    sentence = []
+    labels = []
+
+    for ix, ats in enumerate(aspecterm_sentiments):
+        s = sentences[ix]
+        for k, _ in ats:
+            sentence.append(s)
+            labels.append(k)
+
+    return sentences, labels
+
 def generate_qa_sentence_pairs_nosampling(sentences, aspecterm_sentiments):
     sentence_pairs = []
     labels = []
@@ -270,6 +282,45 @@ class YNAtscProcessor(DataProcessor):
                 continue
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        return examples
+
+class YNARProcessor(DataProcessor):
+    """Processor for the Aspect-target sentiment on YN data"""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            os.path.join(data_dir, "train.xml"), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            os.path.join(data_dir, "test.xml"), "dev")
+
+    def get_labels(self):
+        """See base class."""
+        return ['Hương_vị', 'Tiện_lợi', 'Dinh_dưỡng', 'Bao_bì đóng_gói', 'Kết_cấu bột', 'Nguồn_gốc xuất sứ', 'Thành_phần', 'Cân nặng', 'Hấp_thụ', 'Dị_ứng', 'Mẹ nhiều sữa', 'Phát_triển trí_não', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Chức_năng tiêu_hoá', 'Dinh_dưỡng', 'Hệ_miễn_dịch', 'Nóng', 'Phát_triển thể_chất', 'Ngủ', 'Dạ_dày', 'Nôn_mửa', 'Nhãn_hiệu', 'Thành_phần', 'Chất_lượng', 'Dịch_vụ khách_hàng', 'Dịch_vụ khách_hàng', 'Khuyến_mại', 'Dịch_vụ', 'Bán hàng', 'Bán hàng', 'Tiếp_thị điện_tử', 'Thương_mại_điện_tử', 'Dịch_vụ giao hàng', 'Nội_dung Tiếp_thị điện_tử', 'Hệ_thống thương_mại_điện_tử', 'Quà tặng', 'Tuổi', 'Phân_phối', 'Hạn sử_dụng', 'Chức_năng điều_hành', 'Giá', 'Hướng_dẫn sử_dụng']
+
+    def _create_examples(self, corpus, set_type):
+        """Creates examples for the training and dev sets."""
+
+
+        sentences, aspects = semeval2014term_to_aspectsentiment_hr(corpus)
+
+        sentences, labels = generate_text_label_ar(sentences, aspects)
+
+        examples = []
+
+        for i, sentence in enumerate(sentences):
+
+            guid = "%s-%s" % (set_type, i)
+            try:
+                text = sentence
+                label = labels[i]
+            except IndexError:
+                continue
+            examples.append(
+                InputExample(guid=guid, text_a=text, text_b=None, label=label))
         return examples
 
 
@@ -694,6 +745,7 @@ def acc_and_f1macro(preds, labels):
         "f1_macro": f1_macro,
     }
 
+
 def pearson_and_spearman(preds, labels):
     pearson_corr = pearsonr(preds, labels)[0]
     spearman_corr = spearmanr(preds, labels)[0]
@@ -730,6 +782,8 @@ def compute_metrics(task_name, preds, labels, sentences=None, error_file=None):
         return acc_and_f1macro(preds, labels)
     elif task_name == "atsc":
         return acc_and_f1macro(preds, labels)
+    elif task_name == "ar":
+        return acc_and_f1macro(preds, labels)
     else:
         raise KeyError(task_name)
 
@@ -745,7 +799,8 @@ processors = {
     "rte": RteProcessor,
     "wnli": WnliProcessor,
     "semeval2014-atsc":SemEval2014AtscProcessor,
-    "atsc": YNAtscProcessor
+    "atsc": YNAtscProcessor,
+    "ar": YNARProcessor
 }
 
 output_modes = {
@@ -760,7 +815,8 @@ output_modes = {
     "rte": "classification",
     "wnli": "classification",
     "semeval2014-atsc":"classification",
-    "atsc": "classification"
+    "atsc": "classification", 
+    "ar": "classification"
 }
 
 GLUE_TASKS_NUM_LABELS = {
@@ -774,5 +830,6 @@ GLUE_TASKS_NUM_LABELS = {
     "rte": 2,
     "wnli": 2,
     "semeval2014-atsc":3,
-    "atsc": 3
+    "atsc": 3,
+    "ar": 43
 }
