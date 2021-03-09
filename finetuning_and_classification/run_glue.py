@@ -242,9 +242,9 @@ def evaluate(args, model, tokenizer, prefix=""):
 
 
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
-    def transform_examples_to_hr(exmpls):
-        examples_hr = ['[CLS] ' + exp.text_a + ' [SEP] ' + exp.text_b + ' [LABEL] ' + exp.label for exp in exmpls]
-        return examples_hr
+    # def transform_examples_to_hr(exmpls):
+    #     examples_hr = ['[CLS] ' + exp.text_a + ' [SEP] ' + exp.text_b + ' [LABEL] ' + exp.label for exp in exmpls]
+    #     return examples_hr
 
     processor = processors[task]()
     output_mode = output_modes[task]
@@ -303,7 +303,7 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False):
         all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.float)
 
     dataset = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
-    return dataset, transform_examples_to_hr(examples) # tokenized_examples, examples, all_label_ids,   # transform_examples_to_hr(examples)
+    return dataset, None
 
 
 def parse_args(parser): 
