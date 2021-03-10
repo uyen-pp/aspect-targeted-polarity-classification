@@ -159,7 +159,7 @@ def train(args, train_dataset, model, tokenizer):
                         os.makedirs(output_dir)
                     model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
                     model_to_save.save_pretrained(output_dir)
-                    torch.save(args, os.path.join(output_dir, 'training_args.bin'))
+                    torch.save(args, os.path.join(output_dir, 'args.bin'))
                     logger.info("Saving model checkpoint to %s", output_dir)
 
             if args.max_steps > 0 and global_step > args.max_steps:
@@ -417,11 +417,11 @@ def main():
 
     # Detecting last checkpoint.
     last_checkpoint = None
-    if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
-        last_checkpoint = get_last_checkpoint(training_args.output_dir)
-        if last_checkpoint is None and len(os.listdir(training_args.output_dir)) > 0:
+    if os.path.isdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
+        last_checkpoint = get_last_checkpoint(args.output_dir)
+        if last_checkpoint is None and len(os.listdir(args.output_dir)) > 0:
             raise ValueError(
-                f"Output directory ({training_args.output_dir}) already exists and is not empty. "
+                f"Output directory ({args.output_dir}) already exists and is not empty. "
                 "Use --overwrite_output_dir to overcome."
             )
         elif last_checkpoint is not None:
@@ -458,11 +458,11 @@ def main():
         checkpoint = None
         if last_checkpoint is not None:
             checkpoint = last_checkpoint
-        elif os.path.isdir(model_args.model_name_or_path):
+        elif os.path.isdir(args.model_name_or_path):
             # Check the config from that potential checkpoint has the right number of labels before using it as a
             # checkpoint.
-            if AutoConfig.from_pretrained(model_args.model_name_or_path).num_labels == num_labels:
-                checkpoint = model_args.model_name_or_path
+            if AutoConfig.from_pretrained(args.model_name_or_path).num_labels == num_labels:
+                checkpoint = args.model_name_or_path
 
 
         args.model_type = args.model_type.lower()
