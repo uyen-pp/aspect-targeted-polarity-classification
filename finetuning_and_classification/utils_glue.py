@@ -214,11 +214,11 @@ def semeval2014term_to_aspectsentiment_hr(filename, remove_conflicting=True):
         cats = list(classes)
         cats.sort()
 
-    # idx2aspectlabel = {k: v for k, v in enumerate(cats)}
-    # sentilabel2idx = {"NEG": 1, "NEU": 2, "POS": 3, "CONF": 4}
-    # idx2sentilabel = {k: v for v, k in sentilabel2idx.items()}
+    idx2aspectlabel = {k: v for k, v in enumerate(cats)}
+    sentilabel2idx = {"NEG": 1, "NEU": 2, "POS": 3, "CONF": 4}
+    idx2sentilabel = {k: v for v, k in sentilabel2idx.items()}
 
-    return sentences, aspect_term_sentiments
+    return sentences, aspect_term_sentiments, idx2aspectlabel, idx2sentilabel
 
 def generate_text_label_ar(sentences, aspecterm_sentiments):
     sentence = []
@@ -339,8 +339,6 @@ class YNARProcessor(DataProcessor):
 
     def _create_examples(self, corpus, set_type):
         """Creates examples for the training and dev sets."""
-
-
         sentences, aspects = semeval2014term_to_aspectsentiment_hr(corpus)
 
         sentences, labels = generate_text_label_ar(sentences, aspects)

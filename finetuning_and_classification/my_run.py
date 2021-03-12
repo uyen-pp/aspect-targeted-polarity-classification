@@ -22,6 +22,7 @@ import random
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
+import torch
 
 import numpy as np
 from datasets import load_dataset, load_metric
@@ -42,6 +43,11 @@ from transformers import (
 )
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
+from utils_glue import (
+    compute_metrics, 
+    convert_examples_to_features, 
+    output_modes, 
+    processors)
 
 task_to_keys = {
     "cola": ("sentence", None),
@@ -149,6 +155,71 @@ class ModelArguments:
     )
 
 
+
+def load_and_cache_examples(args, task, tokenizer, evaluate=False):
+
+    processor = processors[task]()
+    output_mode = output_modes[task]
+    # Load data features from cache or dataset file
+    cached_features_file = os.path.join(args.data_dir, 'cached_{}_{}_{}_{}'.format(
+        'dev' if evaluate else 'train',
+        list(filter(None, args.model_name_or_path.split('/'))).pop(),
+        str(args.max_seq_length),
+        str(task)))
+
+    examples=None
+    tokenized_examples=None
+
+    if os.path.exists(cached_features_file):
+        logger.info("Loading features from cached file %s", cached_features_file)
+
+        # tmp code for writing out the textual error analysis; comment for training!
+        label_list = processor.get_labels()
+        examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(
+            args.data_dir)
+        features, tokenized_examples = convert_examples_to_features(examples, label_list, args.max_seq_length,
+                                                                    tokenizer, output_mode,
+                                                                    cls_token_at_end=bool(args.model_type in ['xlnet']),
+                                                                    # xlnet has a cls token at the end
+                                                                    cls_token=tokenizer.cls_token,
+                                                                    sep_token=tokenizer.sep_token,
+                                                                    cls_token_segment_id=2 if args.model_type in [
+                                                                        'xlnet'] else 1,
+                                                                    pad_on_left=bool(args.model_type in ['xlnet']),
+                                                                    # pad on the left for xlnet
+                                                                    pad_token_segment_id=4 if args.model_type in [
+                                                                        'xlnet'] else 0)
+
+        # end tmp
+        # features = torch.load(cached_features_file)
+    else:
+        logger.info("Creating features from dataset file at %s", args.data_dir)
+        label_list = processor.get_labels()
+        examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(args.data_dir)
+        features, tokenized_examples = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
+            cls_token_at_end=bool(args.model_type in ['xlnet']),            # xlnet has a cls token at the end
+            cls_token=tokenizer.cls_token,
+            sep_token=tokenizer.sep_token,
+            cls_token_segment_id=2 if args.model_type in ['xlnet'] else 1,
+            pad_on_left=bool(args.model_type in ['xlnet']),                 # pad on the left for xlnet
+            pad_token_segment_id=4 if args.model_type in ['xlnet'] else 0)
+        if args.local_rank in [-1, 0]:
+            logger.info("Saving features into cached file %s", cached_features_file)
+            torch.save(features, cached_features_file)
+
+    # Convert to Tensors and build dataset
+    all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+    all_input_mask = torch.tensor([f.input_mask for f in features], dtype=torch.long)
+    all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
+    if output_mode == "classification":
+        all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.long)
+    elif output_mode == "regression":
+        all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.float)
+
+    dataset = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+    return dataset
+
+
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -212,9 +283,10 @@ def main():
     #
     # In distributed training, the load_dataset function guarantee that only one local process can concurrently
     # download the dataset.
-    if data_args.task_name is not None:
+    if data_args.task_name is not None or data_args.taskname not in ['ar', 'atsc']:
         # Downloading and loading a dataset from the hub.
         datasets = load_dataset("glue", data_args.task_name)
+
     else:
         # Loading a dataset from your local files.
         # CSV/JSON training and evaluation files are needed.
@@ -264,6 +336,8 @@ def main():
             label_list = datasets["train"].unique("label")
             label_list.sort()  # Let's sort it for determinism
             num_labels = len(label_list)
+
+    
 
     # Load pretrained model and tokenizer
     #
