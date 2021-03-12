@@ -59,6 +59,8 @@ task_to_keys = {
     "sst2": ("sentence", None),
     "stsb": ("sentence1", "sentence2"),
     "wnli": ("sentence1", "sentence2"),
+    "ar": ("sentence", None),
+    "atsc": ("sentence1", "sentence2")
 }
 
 logger = logging.getLogger(__name__)
@@ -104,6 +106,7 @@ class DataTrainingArguments:
     test_file: Optional[str] = field(default=None, metadata={"help": "A csv or a json file containing the test data."})
 
     def __post_init__(self):
+        logger.info(f"Arguments: {self}")
         if self.task_name is not None:
             self.task_name = self.task_name.lower()
             if self.task_name not in task_to_keys.keys():
