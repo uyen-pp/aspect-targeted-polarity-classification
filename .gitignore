@@ -107,5 +107,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 runs/
-load_dataset_ar.py
 tagmap.pickle
