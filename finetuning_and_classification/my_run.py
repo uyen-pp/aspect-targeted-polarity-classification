@@ -290,6 +290,8 @@ def main():
         # Downloading and loading a dataset from the hub.
         datasets = load_dataset("glue", data_args.task_name)
 
+
+
     else:
         # Loading a dataset from your local files.
         # CSV/JSON training and evaluation files are needed.
@@ -311,14 +313,19 @@ def main():
         for key in data_files.keys():
             logger.info(f"load a local file for {key}: {data_files[key]}")
 
-        if data_args.train_file.endswith(".csv"):
-            # Loading a dataset from local csv files
-            datasets = load_dataset("csv", data_files=data_files)
+        if data_args.taskname == 'ar':
+            datasets = load_dataset("load_dataset_ar.py", data_files)
+        elif data_args.taskname == 'atsc':
+            pass
         else:
-            # Loading a dataset from local json files
-            datasets = load_dataset("json", data_files=data_files)
-    # See more about loading any type of standard or custom dataset at
-    # https://huggingface.co/docs/datasets/loading_datasets.html.
+            if data_args.train_file.endswith(".csv"):
+                # Loading a dataset from local csv files
+                datasets = load_dataset("csv", data_files=data_files)
+            else:
+                # Loading a dataset from local json files
+                datasets = load_dataset("json", data_files=data_files)
+        # See more about loading any type of standard or custom dataset at
+        # https://huggingface.co/docs/datasets/loading_datasets.html.
 
     # Labels
     if data_args.task_name is not None:
@@ -442,10 +449,12 @@ def main():
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     # Get the metric function
-    if data_args.task_name is not None:
+    if data_args.task_name is not None or data_args.taskname not in ['ar', 'atsc']:
         metric = load_metric("glue", data_args.task_name)
     # TODO: When datasets metrics include regular accuracy, make an else here and remove special branch from
     # compute_metrics
+    elif data_args.task_name in ["ar", "atsc"]:
+        metric = load_metric("super_glue", "multirc")
 
     # You can define your custom compute_metrics function. It takes an `EvalPrediction` object (a namedtuple with a
     # predictions and label_ids field) and has to return a dictionary string to float.
