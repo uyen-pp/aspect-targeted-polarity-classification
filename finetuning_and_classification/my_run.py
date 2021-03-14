@@ -26,6 +26,7 @@ import torch
 
 import numpy as np
 from datasets import load_dataset, load_metric
+import load_dataset_ar
 
 import transformers
 from transformers import (
@@ -157,8 +158,6 @@ class ModelArguments:
         },
     )
 
-
-
 def load_and_cache_examples(args, task, tokenizer, evaluate=False):
 
     processor = processors[task]()
@@ -286,12 +285,11 @@ def main():
     #
     # In distributed training, the load_dataset function guarantee that only one local process can concurrently
     # download the dataset.
-    if data_args.task_name is not None or data_args.taskname not in ['ar', 'atsc']:
+    logger.info(f"*** Load data for task {data_args.task_name}")
+
+    if data_args.task_name is not None and data_args.task_name not in ['ar', 'atsc']:
         # Downloading and loading a dataset from the hub.
         datasets = load_dataset("glue", data_args.task_name)
-
-
-
     else:
         # Loading a dataset from your local files.
         # CSV/JSON training and evaluation files are needed.
@@ -312,11 +310,14 @@ def main():
 
         for key in data_files.keys():
             logger.info(f"load a local file for {key}: {data_files[key]}")
+        logger.info(f"Load data for task {data_args.task_name}")
 
-        if data_args.taskname == 'ar':
-            datasets = load_dataset("load_dataset_ar.py", data_files)
-        elif data_args.taskname == 'atsc':
+        if data_args.task_name == "ar":
+            datasets = load_dataset(path="./load_dataset_ar.py", data_files=data_files)
+
+        elif data_args.task_name=="atsc":
             pass
+
         else:
             if data_args.train_file.endswith(".csv"):
                 # Loading a dataset from local csv files
@@ -328,13 +329,16 @@ def main():
         # https://huggingface.co/docs/datasets/loading_datasets.html.
 
     # Labels
-    if data_args.task_name is not None:
+    if data_args.task_name is not None and not data_args.task_name == "ar":
         is_regression = data_args.task_name == "stsb"
         if not is_regression:
             label_list = datasets["train"].features["label"].names
             num_labels = len(label_list)
         else:
             num_labels = 1
+    elif data_args.task_name == "ar":
+        # label_list = datasets["train"].features["label"].feature.names
+        num_labels = datasets["train"].features["label"].length
     else:
         # Trying to have good defaults here, don't hesitate to tweak to your needs.
         is_regression = datasets["train"].features["label"].dtype in ["float32", "float64"]
@@ -441,7 +445,7 @@ def main():
 
     train_dataset = datasets["train"]
     eval_dataset = datasets["validation_matched" if data_args.task_name == "mnli" else "validation"]
-    if data_args.task_name is not None or data_args.test_file is not None:
+    if (data_args.task_name is not None and data_args.task_name!="ar") or data_args.test_file is not None:
         test_dataset = datasets["test_matched" if data_args.task_name == "mnli" else "test"]
 
     # Log a few random samples from the training set:
@@ -449,7 +453,7 @@ def main():
         logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     # Get the metric function
-    if data_args.task_name is not None or data_args.taskname not in ['ar', 'atsc']:
+    if data_args.task_name is not None and data_args.task_name not in ['ar', 'atsc']:
         metric = load_metric("glue", data_args.task_name)
     # TODO: When datasets metrics include regular accuracy, make an else here and remove special branch from
     # compute_metrics

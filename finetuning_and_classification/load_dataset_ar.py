@@ -49,11 +49,7 @@ _LICENSE = ""
 # TODO: Add link to the official dataset URLs here
 # The HuggingFace dataset library don't host the datasets but only point to the original files
 # This can be an arbitrary nested dict/list of URLs (see below in `_split_generators` method)
-_PATH = "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\data\\transformed\\yndata\\"
-_PATHS = {
-    "train": _PATH + "train.csv",
-    "dev": _PATH + "dev.csv"
-}
+_URL = ""
 
 _ASPECTS = [
     'Bao_bì đóng_gói',
@@ -94,6 +90,16 @@ _ASPECTS = [
     'Tiện_lợi',
     'Tuổi']
 
+class ARDatasetConfig(datasets.BuilderConfig):
+    """BuilderConfig for SQUAD."""
+
+    def __init__(self, **kwargs):
+        """BuilderConfig for SQUAD.
+        Args:
+          **kwargs: keyword arguments forwarded to super.
+        """
+        super(ARDatasetConfig, self).__init__(**kwargs)
+
 # TODO: Name of the dataset usually match the script name with CamelCase instead of snake_case
 class ARDataset(datasets.GeneratorBasedBuilder):
     
@@ -104,9 +110,10 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             {
                 "sentence": datasets.Value("string"),
                 "label": datasets.Sequence(
-                    datasets.features.ClassLabel(names=_ASPECTS)
+                    feature = datasets.Value("bool"), 
+                    length=len(_ASPECTS)
                 )
-                # These are the features of your dataset like images, labels ...
+                #These are the features of your dataset like images, labels ...
             }
         )
 
@@ -128,7 +135,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        print(self.config)
+
         """Returns SplitGenerators."""
         # TODO: This method is tasked with downloading/extracting the data and defining the splits depending on the configuration
         # If several configurations are possible (listed in BUILDER_CONFIGS), the configuration selected by the user is in self.config.name
@@ -171,6 +178,11 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             )
             next(csv_reader)  # Skip header row.
             for row in csv_reader:
-                _, text, label = row
+                id_, text, label = row
                 label = ast.literal_eval(label)
-                yield _, {"sentence": text, "label": label}
+                label_array = [_ASPECTS[i] in label for i in range(len(_ASPECTS))]
+                print(label_array)
+                yield id_, {
+                    "sentence": text, 
+                    "label": label_array
+                    }

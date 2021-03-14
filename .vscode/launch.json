@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: builder.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name_or_path",
+                "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\data\\models\\phobert_base\\huggingface_phobert_base",
+                "--do_train",
+                "--use_fast_tokenizer",
+                "False",
+                "--task_name",
+                "ar",
+                "--max_seq_length",
+                "256",
+                "--overwrite_cache",
+                "True",
+                "--pad_to_max_length",
+                "True",
+                "--train_file",
+                "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\train.csv",
+                "--validation_file",
+                "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\dev.csv",
+                "--output_dir",
+                "./AR_Model",
+                "--overwrite_output_dir"
+            ]
+        }
+    ],
