@@ -136,6 +136,9 @@ class DataTrainingArguments:
     test_file: Optional[str] = field(
         default=None, metadata={"help": "A csv or a json file containing the test data."}
     )
+    load_dataset_script: str = field(
+        default=None
+    )
 
 
     def __post_init__(self):

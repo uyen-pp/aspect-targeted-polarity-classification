@@ -181,7 +181,6 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 id_, text, label = row
                 label = ast.literal_eval(label)
                 label_array = [_ASPECTS[i] in label for i in range(len(_ASPECTS))]
-                print(label_array)
                 yield id_, {
                     "sentence": text, 
                     "label": label_array
