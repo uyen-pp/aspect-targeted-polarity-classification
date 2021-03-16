@@ -346,7 +346,7 @@ def main():
         logger.info(f"Load data for task {data_args.task_name}")
 
         if data_args.task_name == "ar":
-            datasets = load_dataset(path="./load_dataset_ar.py", data_files=data_files)
+            datasets = load_dataset(path=data_args.load_dataset_script, data_files=data_files)
 
         elif data_args.task_name=="atsc":
             pass
