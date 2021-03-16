@@ -180,7 +180,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             for row in csv_reader:
                 id_, text, label = row
                 label = ast.literal_eval(label)
-                label_array = [_ASPECTS[i]*1.0 in label for i in range(len(_ASPECTS))]
+                label_array = [_ASPECTS[i]*1 in label for i in range(len(_ASPECTS))]
                 yield id_, {
                     "sentence": text, 
                     "label": label_array
