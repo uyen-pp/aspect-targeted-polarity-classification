@@ -110,7 +110,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             {
                 "sentence": datasets.Value("string"),
                 "label": datasets.Sequence(
-                    feature = datasets.Value("float"), 
+                    feature = datasets.Value("bool"), 
                     length=len(_ASPECTS)
                 )
                 #These are the features of your dataset like images, labels ...
@@ -180,7 +180,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             for row in csv_reader:
                 id_, text, label = row
                 label = ast.literal_eval(label)
-                label_array = [_ASPECTS[i]*1 in label for i in range(len(_ASPECTS))]
+                label_array = [_ASPECTS[i] in label for i in range(len(_ASPECTS))]
                 yield id_, {
                     "sentence": text, 
                     "label": label_array
