@@ -473,7 +473,7 @@ def main():
             result["labels"] = examples["label"]
         return result
 
-    datasets = datasets.map(function=preprocess_function, load_from_cache_file = False)
+    datasets = datasets.map(function=preprocess_function, load_from_cache_file = True)
 
     if training_args.do_train:
         if "train" not in datasets:
