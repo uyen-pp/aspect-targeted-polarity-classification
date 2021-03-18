@@ -110,7 +110,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             {
                 "sentence": datasets.Value("string"),
                 "label": datasets.Sequence(
-                    feature = datasets.Value("int"), 
+                    feature = datasets.Value("int8"), 
                     length=len(_ASPECTS)
                 )
                 #These are the features of your dataset like images, labels ...
