@@ -290,26 +290,38 @@ def main():
     data_collator = default_data_collator
 
     datasets = load_dataset(path=load_dataset_script, data_files=data_files)
+    # Labels
+    num_labels = datasets["train"].features["labels"].length
 
-    if training_args.do_train:
-        train_dataset = load_dataset(path=load_dataset_script, data_dir=YN_AR, split="train")
-        num_labels = train_dataset.num_labels
-        train_dataset = train_dataset.map(preprocess_function, batched=True, load_from_cache_file=True)
-        train_dataloader = DataLoader(train_dataset, shuffle=True, collate_fn=data_collator, batch_size = training_args.per_device_train_batch_size)
+    # Preprocessing the datasets
+    sentence1_key, sentence2_key = ("sentence", None)
 
-    if training_args.do_eval:
-        eval_dataset = load_dataset(path=load_dataset_script, data_dir=YN_AR, split="validation")
-        eval_dataset = eval_dataset.map(preprocess_function, batched=True, load_from_cache_file=True)
-        # Log a few random samples from the validation set:
-        for index in random.sample(range(len(eval_dataset)), 3):
-            logger.info(f"Examples: {eval_dataset[index]}.")
-        eval_dataloader = DataLoader(eval_dataset, collate_fn=data_collator, batch_size=training_args.per_device_eval_batch_size)
+    def preprocess_function(examples):
+        # Tokenize the texts
+        args = (
+            (examples[sentence1_key],) if sentence2_key is None else (examples[sentence1_key], examples[sentence2_key])
+        )
+        result = tokenizer(*args, padding=padding, max_length=max_sequence_length, truncation=True)
+        # result["label"] = [[val*1.0 for val in i] for i in examples["label"]]
+        result["labels"] = examples["labels"]
+        return result
 
+    datasets = datasets.map(preprocess_function, batched=True, load_from_cache_file=True)
+
+    train_dataset = datasets["train"]
+    eval_dataset = datasets["validation"]
+
+    # Log a few random samples from the training set:
+    for index in random.sample(range(len(train_dataset)), 3):
+        logger.info(f"Examples: {train_dataset[index]}.")
+
+    # Data collator will default to DataCollatorWithPadding, so we change it if we already did the padding.
+    data_collator = default_data_collator
+
+    train_dataloader = DataLoader(train_dataset, shuffle=True, collate_fn=data_collator, batch_size = training_args.per_device_train_batch_size)
+    eval_dataloader = DataLoader(eval_dataset, collate_fn=data_collator, batch_size=training_args.per_device_eval_batch_size)
     
     """# 4. Load Model"""
-    num_labels = (
-        train_dataset.features['labels'].length if train_dataset is not None 
-        else eval_dataset.features['labels'].length)
 
     # Detecting last checkpoint.
     def get_last_checkpoint(folder):

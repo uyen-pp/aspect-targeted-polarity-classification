@@ -109,7 +109,6 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         features = datasets.Features(
             {
                 "sentence": datasets.Value("string"),
-                "aspects": datasets.Sequence(feature=datasets.Value("string")),
                 "labels": datasets.Sequence(
                     feature = datasets.Value("float"), 
                     length=len(_ASPECTS)
@@ -185,6 +184,5 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
                 yield id_, {
                     "sentence": text.strip('"'), 
-                    "aspects": aspects,
                     "labels": label_array
                     }
