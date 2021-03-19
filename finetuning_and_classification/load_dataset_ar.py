@@ -100,16 +100,16 @@ class ARDatasetConfig(datasets.BuilderConfig):
         """
         super(ARDatasetConfig, self).__init__(**kwargs)
 
+
 # TODO: Name of the dataset usually match the script name with CamelCase instead of snake_case
 class ARDataset(datasets.GeneratorBasedBuilder):
-    
     def _info(self):
         # TODO: This method specifies the datasets.DatasetInfo object which contains informations and typings for the dataset
-        
+        num_labels = len(_ASPECTS)
         features = datasets.Features(
             {
                 "sentence": datasets.Value("string"),
-                "label": datasets.Sequence(
+                "labels": datasets.Sequence(
                     feature = datasets.Value("float"), 
                     length=len(_ASPECTS)
                 )
@@ -144,9 +144,10 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # It can accept any type or nested list/dict and will give back the same structure with the url replaced with path to local files.
         # By default the archives will be extracted and a path to a cached folder where they are extracted is returned instead of the archive 
         data_dir = self.config.data_dir
-        data_files = self.config.data_files if self.config.data_files is not None else { "train": os.path.join(data_dir, "train.csv"), 
-                                                                            "dev": os.path.join(data_dir, "dev.csv")
-                                                                                }
+        data_files = self.config.data_files if self.config.data_files is not None else { 
+            "train": os.path.join(data_dir, "train.csv"), 
+            "validation": os.path.join(data_dir, "dev.csv")
+            }
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
@@ -161,7 +162,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 # These kwargs will be passed to _generate_examples
                 gen_kwargs={
                     "filepath": data_files["validation"],
-                    "split": "dev"
+                    "split": "validation"
                 },
             )
         ]
@@ -179,9 +180,10 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             next(csv_reader)  # Skip header row.
             for row in csv_reader:
                 id_, text, label = row
-                label = ast.literal_eval(label)
-                label_array = [_ASPECTS[i] in label for i in range(len(_ASPECTS))]
+                aspects = ast.literal_eval(label)
+                label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
                 yield id_, {
-                    "sentence": text, 
-                    "label": label_array
+                    "sentence": text.strip('"'), 
+                    "aspects": aspects
+                    "labels": label_array
                     }

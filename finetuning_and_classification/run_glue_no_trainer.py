@@ -345,7 +345,7 @@ def main():
 
     # Get the metric function
     if args.task_name is not None:
-        metric = metric = load_metric("super_glue", "multirc")
+        metric = load_metric("super_glue", "multirc")
 
     # Train!
     total_batch_size = args.train_batch_size
