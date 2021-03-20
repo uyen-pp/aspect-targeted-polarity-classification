@@ -28,31 +28,53 @@
         //     ]
         // },
         {
-            "name": "Python: thesis_phobertbase_aspect_recognition_v2.py",
-        },
-        {
-            "name": "Python: my_run.py",
+            "name": "Python: thesis_phobertbase_atsc_v1.py",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--model_name_or_path","./AR_Model",
+                "--model_name_or_path","./ATSC_Model",
                 // "--do_train",
                 "--do_eval",
                 "--use_fast_tokenizer", "False",
-                "--task_name", "ar",
-                "--max_seq_length", "256",
-                "--overwrite_cache", "True",
+                "--task_name", "atsc",
+                "--max_seq_length", "150",
                 "--pad_to_max_length", "True",
-                "--train_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\train.csv",
-                "--validation_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\dev.csv",
-                "--output_dir", "./AR_Model",
-                "--overwrite_output_dir",  "--per_device_train_batch_size", "1",
+                "--train_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\atsc_dataset\\train.csv",
+                "--validation_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\atsc_dataset\\dev.csv",
+                "--output_dir", "./ATSC_Model",
+                "--overwrite_output_dir",  
+                "--per_device_train_batch_size", "1",
                 "--per_device_eval_batch_size", "1",
-                "--save_steps", "100",
-                "--logging_steps", "10",
-                "--load_dataset_script", "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\finetuning_and_classification\\load_dataset_ar.py"
+                "--save_steps", "500",
+                "--logging_steps", "50",
+                "--load_dataset_script", "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\finetuning_and_classification\\load_dataset_atsc.py"
             ]
-        }
+        },
+        // {
+        //     "name": "Python: my_run.py",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "${file}",
+        //     "console": "integratedTerminal",
+        //     "args": [
+        //         "--model_name_or_path","./AR_Model",
+        //         // "--do_train",
+        //         "--do_eval",
+        //         "--use_fast_tokenizer", "False",
+        //         "--task_name", "ar",
+        //         "--max_seq_length", "256",
+        //         "--overwrite_cache", "True",
+        //         "--pad_to_max_length", "True",
+        //         "--train_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\train.csv",
+        //         "--validation_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\dev.csv",
+        //         "--output_dir", "./AR_Model",
+        //         "--overwrite_output_dir",  "--per_device_train_batch_size", "1",
+        //         "--per_device_eval_batch_size", "1",
+        //         "--save_steps", "100",
+        //         "--logging_steps", "10",
+        //         "--load_dataset_script", "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\finetuning_and_classification\\load_dataset_ar.py"
+        //     ]
+        // }
     ]
