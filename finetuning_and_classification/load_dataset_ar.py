@@ -165,7 +165,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                     "filepath": data_files["validation"],
                     "split": "validation"
                 },
-            )
+            ),
             datasets.SplitGenerator(
                 name=datasets.Split.TEST,
                 # These kwargs will be passed to _generate_examples
