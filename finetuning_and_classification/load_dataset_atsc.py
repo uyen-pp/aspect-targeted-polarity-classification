@@ -144,6 +144,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         data_files = self.config.data_files if self.config.data_files is not None else { 
             "train": os.path.join(data_dir, "train.csv"), 
             "validation": os.path.join(data_dir, "dev.csv")
+            "validation": os.path.join(data_dir, "test.csv")
             }
         return [
             datasets.SplitGenerator(
@@ -160,6 +161,14 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 gen_kwargs={
                     "filepath": data_files["validation"],
                     "split": "validation"
+                },
+            ),
+            datasets.SplitGenerator(
+                name=datasets.Split.TEST,
+                # These kwargs will be passed to _generate_examples
+                gen_kwargs={
+                    "filepath": data_files["test"],
+                    "split": "test"
                 },
             )
         ]
