@@ -146,7 +146,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         data_dir = self.config.data_dir
         data_files = self.config.data_files if self.config.data_files is not None else { 
             "train": os.path.join(data_dir, "train.csv"), 
-            "validation": os.path.join(data_dir, "dev.csv")
+            "validation": os.path.join(data_dir, "dev.csv"),
             "test": os.path.join(data_dir, "test.csv")
             }
         return [
