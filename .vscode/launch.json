@@ -35,9 +35,9 @@
             "console": "integratedTerminal",
             "args": [
                 "--model_name_or_path","./ATSC_Model",
-                // "--do_train",
+                "--do_train",
                 "--do_eval",
-                "--use_fast_tokenizer", "False",
+                "--use_fast_tokenizer", "Falswqzsxdxxdxde",
                 "--task_name", "atsc",
                 "--max_seq_length", "150",
                 "--pad_to_max_length", "True",
