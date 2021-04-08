@@ -37,7 +37,7 @@
                 "--model_name_or_path","./ATSC_Model",
                 "--do_train",
                 "--do_eval",
-                "--use_fast_tokenizer", "Falswqzsxdxxdxde",
+                "--use_fast_tokenizer", "False",
                 "--task_name", "atsc",
                 "--max_seq_length", "150",
                 "--pad_to_max_length", "True",
