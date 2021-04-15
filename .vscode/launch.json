@@ -4,29 +4,29 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        // {
-        //     "name": "Python: run_glue_no_trainer.py",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "program": "${file}",
-        //     "console": "integratedTerminal",
-        //     "args": [
-        //         "--model_name_or_path",
-        //         "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\data\\models\\phobert_base\\huggingface_phobert_base",
-        //         "--use_slow_tokenizer",
-        //         "--task_name",
-        //         "ar",
-        //         "--max_length",
-        //         "256",
-        //         "--pad_to_max_length",
-        //         "--train_file",
-        //         "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\train.csv",
-        //         "--validation_file",
-        //         "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\dev.csv",
-        //         "--output_dir",
-        //         "./AR_Model",
-        //     ]
-        // },
+        {
+            "name": "Python: run_glue_no_trainer.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--model_name_or_path",
+                "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\data\\models\\phobert_base\\huggingface_phobert_base",
+                "--use_slow_tokenizer",
+                "--task_name",
+                "ar",
+                "--max_length",
+                "256",
+                "--pad_to_max_length",
+                "--train_file",
+                "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\train.csv",
+                "--validation_file",
+                "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\data_test\\dev.csv",
+                "--output_dir",
+                "./AR_Model",
+            ]
+        },
         {
             "name": "Python: thesis_phobertbase_atsc_v1.py",
             "type": "python",
@@ -52,29 +52,18 @@
                 "--load_dataset_script", "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\finetuning_and_classification\\load_dataset_atsc.py"
             ]
         },
-        // {
-        //     "name": "Python: my_run.py",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "program": "${file}",
-        //     "console": "integratedTerminal",
-        //     "args": [
-        //         "--model_name_or_path","./AR_Model",
-        //         // "--do_train",
-        //         "--do_eval",
-        //         "--use_fast_tokenizer", "False",
-        //         "--task_name", "ar",
-        //         "--max_seq_length", "256",
-        //         "--overwrite_cache", "True",
-        //         "--pad_to_max_length", "True",
-        //         "--train_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\train.csv",
-        //         "--validation_file", "C:\\Users\\Uyen\\Documents\\nlp\\YNdata\\ar_dataset\\dev.csv",
-        //         "--output_dir", "./AR_Model",
-        //         "--overwrite_output_dir",  "--per_device_train_batch_size", "1",
-        //         "--per_device_eval_batch_size", "1",
-        //         "--save_steps", "100",
-        //         "--logging_steps", "10",
-        //         "--load_dataset_script", "C:\\Users\\Uyen\\Documents\\nlp\\thesis\\aspect-targeted-polarity-classification\\finetuning_and_classification\\load_dataset_ar.py"
-        //     ]
-        // }
+        {
+            "name": "Python: test_load_dataset_ar.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Python: load_dataset_ar.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+        },
     ]

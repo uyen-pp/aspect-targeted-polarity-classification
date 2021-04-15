@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# By: Pham Phuong Uyen 
+
 """TODO: Add a description here."""
 
 from __future__ import absolute_import, division, print_function
@@ -21,7 +23,6 @@ import json
 import os
 import datasets
 import ast
-
 
 # TODO: Add BibTeX citation
 # Find for instance the citation on arxiv or on the dataset repo/website
@@ -134,11 +135,39 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # It can accept any type or nested list/dict and will give back the same structure with the url replaced with path to local files.
         # By default the archives will be extracted and a path to a cached folder where they are extracted is returned instead of the archive 
         data_dir = self.config.data_dir
-        data_files = self.config.data_files if self.config.data_files is not None else { 
-            "train": os.path.join(data_dir, "train.csv"), 
-            "validation": os.path.join(data_dir, "dev.csv"),
-            "test": os.path.join(data_dir, "test.csv")
-            }
+        data_files = dict()
+
+        # Get the train file
+        try:
+            data_files.update({"train": self.config.data_files['train']})
+        except: 
+            print(f"No train datafile found, going to find train.csv in {data_dir}")
+            try:
+                data_files.update({"train": os.path.join(data_dir, "train.csv")})
+            except:
+                data_files.update({"train": None})
+        
+
+        # Get validate file
+        try:
+            data_files.update({"validation": self.config.data_files['dev']})
+        except: 
+            print(f"No validation datafile found, going to find dev.csv in {data_dir}")
+            try:
+                data_files.update({"validation": os.path.join(data_dir, "dev.csv")})
+            except:
+                data_files.update({"validation": None})
+            
+        # Get test file
+        try:
+            data_files.update({"test": self.config.data_files['test']})
+        except: 
+            print(f"No test datafile found, going to find test.csv in {data_dir}")
+            try:
+                data_files.update({"test": os.path.join(data_dir, "test.csv")})
+            except:
+                data_files.update({"test": None})
+        
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
@@ -171,17 +200,17 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # TODO: This method will receive as arguments the `gen_kwargs` defined in the previous `_split_generators` method.
         # It is in charge of opening the given file and yielding (key, example) tuples from the dataset
         # The key is not important, it's more here for legacy reason (legacy from tfds)
-
-        with open(filepath, encoding="utf-8") as csv_file:
-            csv_reader = csv.reader(
-                csv_file, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
-            )
-            next(csv_reader)  # Skip header row.
-            for row in csv_reader:
-                id_, text, label = row
-                aspects = ast.literal_eval(label)
-                label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
-                yield id_, {
+        if filepath is not None:
+            with open(filepath, encoding="utf-8") as csv_file:
+                csv_reader = csv.reader(
+                    csv_file, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
+                )
+                next(csv_reader)  # Skip header row.
+                for row in csv_reader:
+                    id_, text, label = row
+                    aspects = ast.literal_eval(label)
+                    label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
+                    yield id_, {
                     "sentence": text.strip('"'), 
                     "labels": label_array
                     }
