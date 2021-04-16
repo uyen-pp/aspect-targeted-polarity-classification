@@ -133,42 +133,26 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # dl_manager is a datasets.download.DownloadManager that can be used to download and extract URLs
         # It can accept any type or nested list/dict and will give back the same structure with the url replaced with path to local files.
         # By default the archives will be extracted and a path to a cached folder where they are extracted is returned instead of the archive 
-        data_dir = self.config.data_dir
         data_files = dict()
 
         # Get the train file
         try:
             data_files.update({"train": self.config.data_files['train']})
         except: 
-            print(f"No train datafile found, going to find train.csv in {data_dir}")
-        finally:
-            if os.path.exists(os.path.join(data_dir, "train.csv")):
-                data_files.update({"train": os.path.join(data_dir, "train.csv")})
-            else:
-                data_files.update({"train": None})
+            data_files.update({"train": None})
         
 
         # Get validate file
         try:
             data_files.update({"validation": self.config.data_files['dev']})
-        except: 
-            print(f"No validation datafile found, going to find dev.csv in {data_dir}")
-        finally:
-            if os.path.exists(os.path.join(data_dir, "dev.csv")):
-                data_files.update({"validation": os.path.join(data_dir, "dev.csv")})
-            else:
-                data_files.update({"validation": None})
+       except: 
+            data_files.update({"validation": None})
             
         # Get test file
         try:
             data_files.update({"test": self.config.data_files['test']})
         except: 
-            print(f"No test datafile found, going to find test.csv in {data_dir}")
-        finally:
-            if os.path.exists(os.path.join(data_dir, "test.csv")):
-                data_files.update({"test": os.path.join(data_dir, "test.csv")})
-            else:
-                data_files.update({"test": None})
+            data_files.update({"test": None})
         
 
         return [
