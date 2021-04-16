@@ -51,35 +51,6 @@ _LICENSE = ""
 # This can be an arbitrary nested dict/list of URLs (see below in `_split_generators` method)
 _URL = ""
 
-_ASPECTS = [
-    'Bao_bì đóng_gói',
-    'Chất_lượng chung',
-    'Chức_năng tiêu_hóa',
-    'Cân nặng',
-    'Dinh_dưỡng',
-    'Dị_ứng',
-    'Dịch_vụ giao hàng',
-    'Dịch_vụ khách_hàng',
-    'Giá',
-    'Hương_vị',
-    'Hướng_dẫn sử_dụng',
-    'Hạn sử_dụng',
-    'Hấp_thụ',
-    'Hệ_miễn_dịch',
-    'Khuyến_mại',
-    'Kết_cấu bột',
-    'Nguồn_gốc xuất_xứ',
-    'Ngủ',
-    'Nhãn_hiệu',
-    'Nóng',
-    'Phát_triển thể_chất',
-    'Phát_triển trí_não',
-    'Phân_phối',
-    'Quà tặng',
-    'Thương_mại_điện_tử',
-    'Tiện_lợi',
-    'Tuổi']
-
 class ARDatasetConfig(datasets.BuilderConfig):
     """BuilderConfig for SQUAD."""
 
@@ -101,7 +72,6 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 "sentence": datasets.Value("string"),
                 "labels": datasets.Sequence(
                     feature = datasets.Value("string"), 
-                    # length=len(_ASPECTS)
                 )
                 #These are the features of your dataset like images, labels ...
             }
@@ -144,7 +114,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
 
         # Get validate file
         try:
-            data_files.update({"validation": self.config.data_files['dev']})
+            data_files.update({"validation": self.config.data_files['validation']})
         except: 
             data_files.update({"validation": None})
             
@@ -197,7 +167,6 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 for row in csv_reader:
                     id_, text, label = row
                     aspects = ast.literal_eval(label)
-                    # label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
                     yield id_, {
                         "sentence": text.strip('"'), 
                         "labels": aspects
