@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# By: Pham Phuong Uyen 
 
 """TODO: Add a description here."""
 
@@ -29,7 +28,7 @@ import ast
 _CITATION = """\
 @InProceedings{huggingface:dataset,
 title = {A great new dataset},
-authors={huggingface, Inc.
+authors={Uyen P.P (Mei).
 },
 year={2020}
 }
@@ -142,9 +141,10 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             data_files.update({"train": self.config.data_files['train']})
         except: 
             print(f"No train datafile found, going to find train.csv in {data_dir}")
-            try:
+        finally:
+            if os.path.exists(os.path.join(data_dir, "train.csv")):
                 data_files.update({"train": os.path.join(data_dir, "train.csv")})
-            except:
+            else:
                 data_files.update({"train": None})
         
 
@@ -153,9 +153,10 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             data_files.update({"validation": self.config.data_files['dev']})
         except: 
             print(f"No validation datafile found, going to find dev.csv in {data_dir}")
-            try:
+        finally:
+            if os.path.exists(os.path.join(data_dir, "dev.csv")):
                 data_files.update({"validation": os.path.join(data_dir, "dev.csv")})
-            except:
+            else:
                 data_files.update({"validation": None})
             
         # Get test file
@@ -163,11 +164,13 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             data_files.update({"test": self.config.data_files['test']})
         except: 
             print(f"No test datafile found, going to find test.csv in {data_dir}")
-            try:
+        finally:
+            if os.path.exists(os.path.join(data_dir, "test.csv")):
                 data_files.update({"test": os.path.join(data_dir, "test.csv")})
-            except:
+            else:
                 data_files.update({"test": None})
         
+
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
@@ -201,6 +204,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # It is in charge of opening the given file and yielding (key, example) tuples from the dataset
         # The key is not important, it's more here for legacy reason (legacy from tfds)
         if filepath is not None:
+
             with open(filepath, encoding="utf-8") as csv_file:
                 csv_reader = csv.reader(
                     csv_file, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
@@ -214,3 +218,4 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                     "sentence": text.strip('"'), 
                     "labels": label_array
                     }
+                
