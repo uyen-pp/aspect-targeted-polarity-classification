@@ -145,7 +145,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # Get validate file
         try:
             data_files.update({"validation": self.config.data_files['dev']})
-       except: 
+        except: 
             data_files.update({"validation": None})
             
         # Get test file
@@ -197,9 +197,9 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                 for row in csv_reader:
                     id_, text, label = row
                     aspects = ast.literal_eval(label)
-                    label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
+                    # label_array = [_ASPECTS[i] in aspects for i in range(len(_ASPECTS))]
                     yield id_, {
                     "sentence": text.strip('"'), 
-                    "labels": label_array
+                    "labels": aspects
                     }
                 
