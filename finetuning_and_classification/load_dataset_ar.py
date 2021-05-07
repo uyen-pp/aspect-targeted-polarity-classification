@@ -23,33 +23,6 @@ import os
 import datasets
 import ast
 
-# TODO: Add BibTeX citation
-# Find for instance the citation on arxiv or on the dataset repo/website
-_CITATION = """\
-@InProceedings{huggingface:dataset,
-title = {A great new dataset},
-authors={Uyen P.P (Mei).
-},
-year={2020}
-}
-"""
-
-# TODO: Add description of the dataset here
-# You can copy an official description
-_DESCRIPTION = """\
-This new dataset is designed to solve this great NLP task and is crafted with a lot of care. 
-"""
-
-# TODO: Add a link to an official homepage for the dataset here
-_HOMEPAGE = ""
-
-# TODO: Add the licence for the dataset here if you can find it
-_LICENSE = ""
-
-# TODO: Add link to the official dataset URLs here
-# The HuggingFace dataset library don't host the datasets but only point to the original files
-# This can be an arbitrary nested dict/list of URLs (see below in `_split_generators` method)
-_URL = ""
 
 class ARDatasetConfig(datasets.BuilderConfig):
     """BuilderConfig for SQUAD."""
@@ -61,9 +34,33 @@ class ARDatasetConfig(datasets.BuilderConfig):
         """
         super(ARDatasetConfig, self).__init__(**kwargs)
 
+_ASPECTS = ['Hạn sử dụng',
+        'Kết cấu bột',
+        'Hướng dẫn sử dụng',
+        'Khuyến mãi & Quà tặng',
+        'Nguồn gốc xuất xứ',
+        'Tiêu hóa và hấp thụ',
+        'Phát triển trí não',
+        'Dịch vụ giao hàng',
+        'Phát triển thể chất',
+        'Chăm sóc khách hàng',
+        'Tuổi',
+        'Dị ứng',
+        'Phân phối',
+        'Bao bì đóng gói',
+        'Thương mại điện tử',
+        'Thành phần dinh dưỡng',
+        'Giá',
+        'Hệ miễn dịch',
+        'Hương vị',
+        'Chương trình tiếp thị',
+        'Chất lượng chung',
+        'Tiện lợi',
+        'Hỗ trợ giấc ngủ']
 
 # TODO: Name of the dataset usually match the script name with CamelCase instead of snake_case
 class ARDataset(datasets.GeneratorBasedBuilder):
+    
     def _info(self):
         # TODO: This method specifies the datasets.DatasetInfo object which contains informations and typings for the dataset
 
@@ -71,27 +68,15 @@ class ARDataset(datasets.GeneratorBasedBuilder):
             {
                 "sentence": datasets.Value("string"),
                 "labels": datasets.Sequence(
-                    feature = datasets.Value("string"), 
+                    feature = datasets.ClassLabel(names=_ASPECTS), 
                 )
                 #These are the features of your dataset like images, labels ...
             }
         )
 
         return datasets.DatasetInfo(
-            # This is the description that will appear on the datasets page.
-            description=_DESCRIPTION,
             # This defines the different columns of the dataset and their types
             features=features,  # Here we define them above because they are different between the two configurations
-            # If there's a common (input, target) tuple from the features,
-            # specify them here. They'll be used if as_supervised=True in
-            # builder.as_dataset.
-            supervised_keys=None,
-            # Homepage of the dataset for documentation
-            homepage=_HOMEPAGE,
-            # License for the dataset if available
-            license=_LICENSE,
-            # Citation for the dataset
-            citation=_CITATION,
         )
 
     def _split_generators(self, dl_manager):
