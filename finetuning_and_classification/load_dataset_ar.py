@@ -22,7 +22,7 @@ import json
 import os
 import datasets
 import ast
-
+import numpy as np
 
 class ARDatasetConfig(datasets.BuilderConfig):
     """BuilderConfig for SQUAD."""
@@ -67,8 +67,9 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         features = datasets.Features(
             {
                 "sentence": datasets.Value("string"),
+                "num_tag": datasets.Value("int8"),
                 "labels": datasets.Sequence(
-                    feature = datasets.ClassLabel(names=_ASPECTS), 
+                    feature = datasets.ClassLabel(names=_ASPECTS),
                 )
                 #These are the features of your dataset like images, labels ...
             }
@@ -154,6 +155,7 @@ class ARDataset(datasets.GeneratorBasedBuilder):
                     aspects = ast.literal_eval(label)
                     yield id_, {
                         "sentence": text.strip('"'), 
+                        "num_tag": len(aspects),
                         "labels": aspects
                     }
                 
