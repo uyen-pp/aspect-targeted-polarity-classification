@@ -117,20 +117,8 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         )
 
         return datasets.DatasetInfo(
-            # This is the description that will appear on the datasets page.
-            description=_DESCRIPTION,
-            # This defines the different columns of the dataset and their types
             features=features,  # Here we define them above because they are different between the two configurations
-            # If there's a common (input, target) tuple from the features,
-            # specify them here. They'll be used if as_supervised=True in
-            # builder.as_dataset.
-            supervised_keys=None,
-            # Homepage of the dataset for documentation
-            homepage=_HOMEPAGE,
-            # License for the dataset if available
-            license=_LICENSE,
-            # Citation for the dataset
-            citation=_CITATION,
+
         )
 
     def _split_generators(self, dl_manager):
@@ -196,16 +184,17 @@ class ARDataset(datasets.GeneratorBasedBuilder):
         # TODO: This method will receive as arguments the `gen_kwargs` defined in the previous `_split_generators` method.
         # It is in charge of opening the given file and yielding (key, example) tuples from the dataset
         # The key is not important, it's more here for legacy reason (legacy from tfds)
-
-        with open(filepath, encoding="utf-8") as csv_file:
-            csv_reader = csv.reader(
-                csv_file, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
-            )
-            next(csv_reader)  # Skip header row.
-            for row in csv_reader:
-                id_, sentence1, sentence2, label = row
-                yield id_, {
-                    "sentence1": sentence1.strip('"'), 
-                    "sentence2": sentence2.strip('"'),
-                    "label": mapper[label]
-                    }
+        if filepath is not None:
+            with open(filepath, encoding="utf-8") as csv_file:
+                
+                csv_reader = csv.reader(
+                    csv_file, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
+                )
+                next(csv_reader)  # Skip header row.
+                for row in csv_reader:
+                    id_, sentence1, sentence2, label = row
+                    yield id_, {
+                        "sentence1": sentence1.strip('"'), 
+                        "sentence2": sentence2.strip('"'),
+                        "label": mapper[label]
+                        }
