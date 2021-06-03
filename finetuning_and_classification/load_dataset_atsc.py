@@ -99,9 +99,9 @@ class ARDatasetConfig(datasets.BuilderConfig):
 # TODO: Name of the dataset usually match the script name with CamelCase instead of snake_case
 
 mapper = {
-    -1: "NEG",
-    0: "NEU", 
-    1: "POS"
+    "-1": "NEG",
+    "0": "NEU", 
+    "1": "POS"
 }
 class ARDataset(datasets.GeneratorBasedBuilder):
     
